@@ -9,11 +9,16 @@ class Solver(private val gameDataRepo: GameDataRepo = GameDataRepo()) {
     fun solve(skillRequirements: List<Pair<ArmourSkills, Int>>, minDef: Int) = flow {
         //Setup
         val model = Model("Metallian's Armour Set Search for Monster Hunter Wilds")
-        val labels = listOf("Body", "Helm", "Arm")
-        val body = gameDataRepo.getAllBodyArmour()
+        //  Fetching Data
+        val body = gameDataRepo.getAllBody()
         val helms = gameDataRepo.getAllHelms()
         val arms = gameDataRepo.getAllArm()
-        val armour = listOf(body, helms, arms)
+        val waist = gameDataRepo.getAllWaist()
+        val leg = gameDataRepo.getAllLeg()
+
+        //  Arranging game data
+        val labels = listOf("Body", "Helm", "Arm", "Waist")
+        val armour = listOf(body, helms, arms, waist)
         val armourMap = labels.zip(armour).toMap()
         val armourVarMap = labels.associateWith { mutableListOf<BoolVar>() }
         val defenceVars = mutableListOf<IntVar>()
@@ -54,10 +59,11 @@ class Solver(private val gameDataRepo: GameDataRepo = GameDataRepo()) {
         while (solver.solve()) {
             emit(
                 ArmourSet(
-                    armourVarMap["Body"]!!.first { it.value != 0 }.name,
-                    armourVarMap["Helm"]!!.first { it.value != 0 }.name,
-                    armourVarMap["Arm"]!!.first { it.value != 0 }.name
-                )
+                    armourVarMap["Body"]!!.firstOrNull { it.value != 0 }?.name ?: "",
+                    armourVarMap["Helm"]!!.firstOrNull { it.value != 0 }?.name ?: "",
+                    armourVarMap["Arm"]!!.firstOrNull { it.value != 0 }?.name ?: "",
+                    armourVarMap["Waist"]!!.firstOrNull { it.value != 0 }?.name ?: "",
+                    )
             )
         }
         println("")

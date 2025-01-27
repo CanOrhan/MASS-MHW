@@ -1,10 +1,12 @@
 package com.canorhan
 
+import com.canorhan.ArmourSkills.*
+
 suspend fun main() {
     val skillRequirements =
-        listOf(ArmourSkills.BOMBARDIER to 1, ArmourSkills.STAMINA_SURGE to 1, ArmourSkills.FREE_MEAL to 1)
+        listOf(DIVINE_BLESSING to 2, SPEED_EATING to 2)
 
-    val minDef = 16
+    val minDef = 12
 
     Solver().solve(skillRequirements, minDef).collect { armourSet ->
         println(armourSet)
